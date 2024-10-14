@@ -30,6 +30,11 @@ class RectGeneration
 public:
     RectGeneration(cv::Mat mat, int width, int height,int startx, int starty, double value, int minSize);
     GenerateResult Generate(std::vector<Rect>& result, int start);
+    static int RetNum()
+    {
+        return s_retNum;
+    }
+    static int s_retNum;
 private:
     GenerateResult GenrateHorizontal(std::vector<Rect>& result, int start, int edgeRow);
     GenerateResult GenrateVertical(std::vector<Rect>& result, int start, int edgeCol);

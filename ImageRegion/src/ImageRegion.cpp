@@ -24,12 +24,12 @@ int main()
 	cv::Laplacian(red, gradient, -1);
 
 	RectGeneration g(red, red.cols, red.rows, 0, 0, 0.1, 6);
-	std::vector<Rect> result;
+	std::vector<Rect> result(10000);
 	auto ret = g.Generate(result, 0);
-	fmt::println("-------------------------------------ret = {}", ret.rectNum);
+	fmt::println("-------------------------------------ret = {}, retNum = {}", ret.rectNum, RectGeneration::RetNum());
 
-	cv::imshow("h01", red);
-	cv::imshow("h01_gradiant", gradient);
+	//cv::imshow("h01", red);
+	//cv::imshow("h01_gradiant", gradient);
 	cv::waitKey(0);
 	return 0;
 }

@@ -1,5 +1,6 @@
 ﻿#include "RectGeneration.hpp"
 
+int RectGeneration::s_retNum = 0;
 RectGeneration::RectGeneration(cv::Mat mat, int width, int height, int startx, int starty, double value, int minSize)
     :_mat(mat)
     , _width(width)
@@ -43,6 +44,7 @@ GenerateResult RectGeneration::Generate(std::vector<Rect>& result, int start)
     r.rightBottom = Point{_startx + _width - 1, _starty};
     r.rightTop = Point{_startx + _width - 1, _starty + _height - 1};
     result.push_back(r);
+    s_retNum++;
     return ret;
 }
 GenerateResult RectGeneration::GenerateAll(std::vector<Rect>& result, int start)
@@ -61,6 +63,7 @@ GenerateResult RectGeneration::GenerateAll(std::vector<Rect>& result, int start)
         }
     }
     GenerateResult ret(false, (_width - 1) * (_height - 1));
+    s_retNum += (_width - 1) * (_height - 1);
     return ret;
 }
 GenerateResult RectGeneration::GenrateHorizontal(std::vector<Rect>& result, int start, int edgeRow)
