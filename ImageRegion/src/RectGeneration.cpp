@@ -14,7 +14,8 @@ RectGeneration::RectGeneration(cv::Mat mat, int width, int height, int startx, i
 GenerateResult RectGeneration::Generate(std::vector<Rect>& result, int start)
 {
     int current = start;
-    auto ret = GenrateHorizontal(result, current, 0);
+    GenerateResult ret = {true, 0};
+    ret = GenrateHorizontal(result, current, 0);
     if (!ret.noSplit)
     {
         return ret;
@@ -46,7 +47,6 @@ GenerateResult RectGeneration::Generate(std::vector<Rect>& result, int start)
 }
 GenerateResult RectGeneration::GenerateAll(std::vector<Rect>& result, int start)
 {
-    GenerateResult ret;
     for (int y = 0; y < _height - 1; y++)
     {
         for (int x = 0; x < _width - 1; x++)
@@ -60,8 +60,7 @@ GenerateResult RectGeneration::GenerateAll(std::vector<Rect>& result, int start)
             result.push_back(r);
         }
     }
-    ret.noSplit = false;
-    ret.rectNum = (_width - 1) * (_height - 1);
+    GenerateResult ret(false, (_width - 1) * (_height - 1));
     return ret;
 }
 GenerateResult RectGeneration::GenrateHorizontal(std::vector<Rect>& result, int start, int edgeRow)
@@ -69,7 +68,7 @@ GenerateResult RectGeneration::GenrateHorizontal(std::vector<Rect>& result, int 
     int current = start;
     for (int i = 0; i < _width; i++)
     {
-        double c = _mat.at<double>(edgeRow, i);
+        double c = _mat.at<float>(edgeRow, i);
         if (c > _value)
         {//超过阈值，此矩阵需要拆分/全部生成矩形
             if (_width <= _minSize || _height <= _minSize)
@@ -78,12 +77,12 @@ GenerateResult RectGeneration::GenrateHorizontal(std::vector<Rect>& result, int 
             }
             else
             {
-                cv::Mat newMat(_mat({0,_width / 2}, {0, _height}));
-                RectGeneration g(newMat, _width / 2, _height,0,0, _value, _minSize);
+                cv::Mat newMat(_mat({0, _height}, {0,_width / 2}));
+                RectGeneration g(newMat, _width / 2, _height, 0, 0, _value, _minSize);
                 current += g.Generate(result, current).rectNum;
 
-                newMat = _mat({_width / 2, _width}, {0, _height});
-                RectGeneration g2(newMat, _width - _width / 2, _height,_width / 2,0, _value, _minSize);
+                newMat = _mat({0, _height}, {_width / 2, _width});
+                RectGeneration g2(newMat, _width - _width / 2, _height, _width / 2, 0, _value, _minSize);
                 current += g2.Generate(result, current).rectNum;
 
                 GenerateResult ret = {false, current};
@@ -99,7 +98,7 @@ GenerateResult RectGeneration::GenrateVertical(std::vector<Rect>& result, int st
     int current = start;
     for (int i = 0; i < _height; i++)
     {
-        double c = _mat.at<double>(i, edgeCol);
+        double c = _mat.at<float>(i, edgeCol);
         if (c > _value)
         {//超过阈值，此矩阵需要拆分/全部生成矩形
             if (_width <= _minSize || _height <= _minSize)
@@ -108,12 +107,12 @@ GenerateResult RectGeneration::GenrateVertical(std::vector<Rect>& result, int st
             }
             else
             {
-                cv::Mat newMat(_mat({0,_width}, {0, _height / 2}));
-                RectGeneration g(newMat, _width, _height / 2,0,0, _value, _minSize);
+                cv::Mat newMat(_mat({0, _height / 2}, {0,_width}));
+                RectGeneration g(newMat, _width, _height / 2, 0, 0, _value, _minSize);
                 current += g.Generate(result, current).rectNum;
 
-                newMat = _mat({0, _width}, {_height / 2, _height});
-                RectGeneration g2(newMat, _width, _height - _height / 2,0,_height / 2, _value, _minSize);
+                newMat = _mat({_height / 2, _height}, {0, _width});
+                RectGeneration g2(newMat, _width, _height - _height / 2, 0, _height / 2, _value, _minSize);
                 current += g2.Generate(result, current).rectNum;
 
                 GenerateResult ret = {false, current};

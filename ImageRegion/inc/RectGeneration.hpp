@@ -17,8 +17,13 @@ struct Rect
 };
 struct GenerateResult
 {
-    int rectNum;
+GenerateResult(bool nos, int num)
+    :noSplit(nos)
+    ,rectNum(num)
+{ }
+
     bool noSplit;
+    int rectNum;
 };
 class RectGeneration
 {
