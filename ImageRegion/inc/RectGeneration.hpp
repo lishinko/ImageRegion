@@ -34,6 +34,7 @@ private:
     GenerateResult GenrateHorizontal(std::vector<Rect>& result, int start, int edgeRow);
     GenerateResult GenrateVertical(std::vector<Rect>& result, int start, int edgeCol);
     GenerateResult GenerateAll(std::vector<Rect>& result, int start);
+    GenerateResult GenerateQuadTree(std::vector<Rect>& result, int start);
     cv::Mat _mat;
     int _width;
     int _height;

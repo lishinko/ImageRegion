@@ -77,16 +77,7 @@ GenerateResult RectGeneration::GenrateHorizontal(std::vector<Rect>& result, int 
             }
             else
             {
-                cv::Mat newMat(_mat({0, _height}, {0,_width / 2}));
-                RectGeneration g(newMat, _width / 2, _height, 0, 0, _value, _minSize);
-                current += g.Generate(result, current).rectNum;
-
-                newMat = _mat({0, _height}, {_width / 2, _width});
-                RectGeneration g2(newMat, _width - _width / 2, _height, _width / 2, 0, _value, _minSize);
-                current += g2.Generate(result, current).rectNum;
-
-                GenerateResult ret = {false, current};
-                return ret;
+                return GenerateQuadTree(result, current);
             }
         }
     }
@@ -107,18 +98,31 @@ GenerateResult RectGeneration::GenrateVertical(std::vector<Rect>& result, int st
             }
             else
             {
-                cv::Mat newMat(_mat({0, _height / 2}, {0,_width}));
-                RectGeneration g(newMat, _width, _height / 2, 0, 0, _value, _minSize);
-                current += g.Generate(result, current).rectNum;
-
-                newMat = _mat({_height / 2, _height}, {0, _width});
-                RectGeneration g2(newMat, _width, _height - _height / 2, 0, _height / 2, _value, _minSize);
-                current += g2.Generate(result, current).rectNum;
-
-                GenerateResult ret = {false, current};
-                return ret;
+                return GenerateQuadTree(result, current);
             }
         }
     }
     return {true, 0};
+}
+GenerateResult RectGeneration::GenerateQuadTree(std::vector<Rect>& result, int start)
+{
+    int current = start;
+    cv::Mat newMat(_mat({0, _height / 2}, {0,_width / 2}));
+    RectGeneration g(newMat, newMat.cols, newMat.rows, 0, 0, _value, _minSize);
+    current += g.Generate(result, current).rectNum;
+
+    newMat = _mat({0, _height / 2}, {_width / 2, _width});
+    g = RectGeneration(newMat, newMat.cols, newMat.rows, _width / 2, 0, _value, _minSize);
+    current += g.Generate(result, current).rectNum;
+
+    newMat = _mat({_height / 2, _height}, {0,_width / 2});
+    g = RectGeneration(newMat, newMat.cols, newMat.rows, 0, _height / 2, _value, _minSize);
+    current += g.Generate(result, current).rectNum;
+
+    newMat = _mat({_height / 2, _height}, {_width / 2, _width});
+    g = RectGeneration(newMat, newMat.cols, newMat.rows, _width / 2, _height / 2, _value, _minSize);
+    current += g.Generate(result, current).rectNum;
+
+    GenerateResult ret = {false, current};
+    return ret;
 }
