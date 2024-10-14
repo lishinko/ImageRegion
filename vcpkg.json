@@ -1,6 +1,11 @@
 {
   "dependencies": [
-    "opencv4",
-    "fmt"
+    "fmt",
+    {
+      "name": "opencv4",
+      "features": [
+        "openexr"
+      ]
+    }
   ]
 }
