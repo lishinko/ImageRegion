@@ -5,9 +5,10 @@ set($ENV{OPENCV_IO_ENABLE_OPENEXR} 1)
 find_package(OpenCV CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 
-
+include_directories(./inc)
+aux_source_directory(src SRC)
 # 将源代码添加到此项目的可执行文件。
-add_executable (ImageRegion "ImageRegion.cpp" "ImageRegion.h")
+add_executable (ImageRegion ${SRC})
 target_link_libraries(ImageRegion PRIVATE
 fmt::fmt
 opencv_highgui

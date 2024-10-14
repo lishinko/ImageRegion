@@ -4,11 +4,11 @@
 #include "ImageRegion.h"
 #include <opencv2/opencv.hpp>
 #include <fmt/format.h>
+#include <RectGeneration.hpp>
 using namespace std;
 
 int main()
 {
-	cout << "Hello CMake." << endl;
 	auto path = "D:/repos/ImageRegion/h01.exr";
 	cv::Mat mat = cv::imread(path, cv::ImreadModes::IMREAD_UNCHANGED);
 	cv::Mat bgra[4];
@@ -22,6 +22,12 @@ int main()
 	auto t = red.type();
 	cv::Mat gradient(red.rows, red.cols,t);
 	cv::Laplacian(red, gradient, -1);
+
+	RectGeneration g(red, red.cols, red.rows, 0, 0, 0.1, 6);
+	std::vector<Rect> result;
+	auto ret = g.Generate(result, 0);
+	fmt::println("-------------------------------------ret = {}", ret.rectNum);
+
 	cv::imshow("h01", red);
 	cv::imshow("h01_gradiant", gradient);
 	cv::waitKey(0);

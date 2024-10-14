@@ -1,0 +1,39 @@
+#pragma once
+#include <opencv2/opencv.hpp>
+#include <vector>
+
+
+struct Point
+{
+    int x;
+    int y;
+};
+struct Rect
+{
+    Point leftBottom;
+    Point leftTop;
+    Point rightBottom;
+    Point rightTop;
+};
+struct GenerateResult
+{
+    int rectNum;
+    bool noSplit;
+};
+class RectGeneration
+{
+public:
+    RectGeneration(cv::Mat mat, int width, int height,int startx, int starty, double value, int minSize);
+    GenerateResult Generate(std::vector<Rect>& result, int start);
+private:
+    GenerateResult GenrateHorizontal(std::vector<Rect>& result, int start, int edgeRow);
+    GenerateResult GenrateVertical(std::vector<Rect>& result, int start, int edgeCol);
+    GenerateResult GenerateAll(std::vector<Rect>& result, int start);
+    cv::Mat _mat;
+    int _width;
+    int _height;
+    int _startx;
+    int _starty;
+    double _value;
+    int _minSize;
+};
