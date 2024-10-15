@@ -25,12 +25,19 @@ int main()
 
 	RectGeneration g(red, 0, 0, 0.1, 6);
 	std::vector<Rect> result;
+	cv::Rect r;
+	r.x = 20;
+	r.y = 40;
+	r.width = 100;
+	r.height = 200;
+	cv::rectangle(gradient, r, cv::Scalar(0.4), 2, cv::LineTypes::FILLED);
+	//cv::rectangle(gradient, r, cv::Scalar(0.4));
 	result.reserve(10000);
 	auto ret = g.Generate(result);
 	fmt::println("-------------------------------------ret = {}, retNum = {} quad = {}", result.size(), RectGeneration::RetNum(), RectGeneration::QuardGenNum());
 
 	//cv::imshow("h01", red);
-	//cv::imshow("h01_gradiant", gradient);
+	cv::imshow("h01_gradiant", gradient);
 	cv::waitKey(0);
 	return 0;
 }
