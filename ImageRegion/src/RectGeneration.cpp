@@ -1,6 +1,7 @@
 ﻿#include "RectGeneration.hpp"
 
 int RectGeneration::s_retNum = 0;
+int RectGeneration::s_quadTreeGenerationNum = 0;
 RectGeneration::RectGeneration(cv::Mat mat, int startx, int starty, double value, int minSize)
     :_mat(mat)
     , _width(mat.cols)
@@ -12,26 +13,26 @@ RectGeneration::RectGeneration(cv::Mat mat, int startx, int starty, double value
 {
 
 }
-GenerateResult RectGeneration::Generate(std::vector<Rect>& result, int start)
+GenerateResult RectGeneration::Generate(std::vector<Rect>& result)
 {
-    int current = start;
+    int current = 0;
     GenerateResult ret = {true, 0};
-    ret = GenrateHorizontal(result, current, 0);
+    ret = GenrateHorizontal(result, 0);
     if (!ret.noSplit)
     {
         return ret;
     }
-    ret = GenrateHorizontal(result, current, _height - 1);
+    ret = GenrateHorizontal(result, _height - 1);
     if (!ret.noSplit)
     {
         return ret;
     }
-    ret = GenrateVertical(result, current, 0);
+    ret = GenrateVertical(result, 0);
     if (!ret.noSplit)
     {
         return ret;
     }
-    ret = GenrateVertical(result, current, _width - 1);
+    ret = GenrateVertical(result, _width - 1);
     if (!ret.noSplit)
     {
         return ret;
@@ -49,7 +50,7 @@ GenerateResult RectGeneration::Generate(std::vector<Rect>& result, int start)
     ret.rectNum = 1;
     return ret;
 }
-GenerateResult RectGeneration::GenerateAll(std::vector<Rect>& result, int start)
+GenerateResult RectGeneration::GenerateAll(std::vector<Rect>& result)
 {
     for (int y = 0; y < _height - 1; y++)
     {
@@ -68,9 +69,9 @@ GenerateResult RectGeneration::GenerateAll(std::vector<Rect>& result, int start)
     s_retNum += (_width - 1) * (_height - 1);
     return ret;
 }
-GenerateResult RectGeneration::GenrateHorizontal(std::vector<Rect>& result, int start, int edgeRow)
+GenerateResult RectGeneration::GenrateHorizontal(std::vector<Rect>& result, int edgeRow)
 {
-    int current = start;
+    int current = 0;
     for (int i = 0; i < _width; i++)
     {
         double c = _mat.at<float>(edgeRow, i);
@@ -78,20 +79,20 @@ GenerateResult RectGeneration::GenrateHorizontal(std::vector<Rect>& result, int 
         {//超过阈值，此矩阵需要拆分/全部生成矩形
             if (_width <= _minSize || _height <= _minSize)
             {
-                return GenerateAll(result, current);
+                return GenerateAll(result);
             }
             else
             {
-                return GenerateQuadTree(result, current);
+                return GenerateQuadTree(result);
             }
         }
     }
     return {true, 0};
 }
 
-GenerateResult RectGeneration::GenrateVertical(std::vector<Rect>& result, int start, int edgeCol)
+GenerateResult RectGeneration::GenrateVertical(std::vector<Rect>& result, int edgeCol)
 {
-    int current = start;
+    int current = 0;
     for (int i = 0; i < _height; i++)
     {
         double c = _mat.at<float>(i, edgeCol);
@@ -99,35 +100,37 @@ GenerateResult RectGeneration::GenrateVertical(std::vector<Rect>& result, int st
         {//超过阈值，此矩阵需要拆分/全部生成矩形
             if (_width <= _minSize || _height <= _minSize)
             {
-                return GenerateAll(result, current);
+                return GenerateAll(result);
             }
             else
             {
-                return GenerateQuadTree(result, current);
+                return GenerateQuadTree(result);
             }
         }
     }
     return GenerateResult(true, 0);
 }
-GenerateResult RectGeneration::GenerateQuadTree(std::vector<Rect>& result, int start)
+GenerateResult RectGeneration::GenerateQuadTree(std::vector<Rect>& result)
 {
-    int current = start;
+    int current = 0;
     cv::Mat newMat(_mat({0, _height / 2}, {0,_width / 2}));
     RectGeneration g(newMat, _startx + 0, _starty + 0, _value, _minSize);
-    current += g.Generate(result, current).rectNum;
+    current += g.Generate(result).rectNum;
 
     newMat = _mat({0, _height / 2}, {_width / 2, _width});
     g = RectGeneration(newMat, _startx + _width / 2, _starty + 0, _value, _minSize);
-    current += g.Generate(result, current).rectNum;
+    current += g.Generate(result).rectNum;
 
     newMat = _mat({_height / 2, _height}, {0,_width / 2});
     g = RectGeneration(newMat, _startx + 0, _starty + _height / 2, _value, _minSize);
-    current += g.Generate(result, current).rectNum;
+    current += g.Generate(result).rectNum;
 
     newMat = _mat({_height / 2, _height}, {_width / 2, _width});
     g = RectGeneration(newMat, _startx + _width / 2, _starty + _height / 2, _value, _minSize);
-    current += g.Generate(result, current).rectNum;
+    current += g.Generate(result).rectNum;
 
     GenerateResult ret(false, current);
+
+    s_quadTreeGenerationNum++;
     return ret;
 }

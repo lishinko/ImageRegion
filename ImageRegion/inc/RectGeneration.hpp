@@ -29,17 +29,22 @@ class RectGeneration
 {
 public:
     RectGeneration(cv::Mat mat,int startx, int starty, double value, int minSize);
-    GenerateResult Generate(std::vector<Rect>& result, int start);
+    GenerateResult Generate(std::vector<Rect>& result);
     static int RetNum()
     {
         return s_retNum;
     }
     static int s_retNum;
+    static int QuardGenNum()
+    {
+        return s_quadTreeGenerationNum;
+    }
+    static int s_quadTreeGenerationNum;
 private:
-    GenerateResult GenrateHorizontal(std::vector<Rect>& result, int start, int edgeRow);
-    GenerateResult GenrateVertical(std::vector<Rect>& result, int start, int edgeCol);
-    GenerateResult GenerateAll(std::vector<Rect>& result, int start);
-    GenerateResult GenerateQuadTree(std::vector<Rect>& result, int start);
+    GenerateResult GenrateHorizontal(std::vector<Rect>& result,  int edgeRow);
+    GenerateResult GenrateVertical(std::vector<Rect>& result,  int edgeCol);
+    GenerateResult GenerateAll(std::vector<Rect>& result);
+    GenerateResult GenerateQuadTree(std::vector<Rect>& result);
     cv::Mat _mat;
     int _width;
     int _height;
