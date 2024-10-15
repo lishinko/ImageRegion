@@ -20,11 +20,11 @@ int main()
     }
     cv::Mat red(bgra[2]);
     auto t = red.type();
-    cv::Mat gradient(red.rows, red.cols, t);
+    cv::Mat gradient(red.rows, red.cols, CV_32F);
     cv::Laplacian(red, gradient, -1);
 
 
-    RectGeneration g(red, 0, 0, 0.1, 6);
+    RectGeneration g(gradient, 0, 0, 0.1, 6);
     std::vector<Rect> result;
     //cv::rectangle(gradient, r, cv::Scalar(0.4));
     result.reserve(10000);
@@ -46,6 +46,7 @@ int main()
     //cv::imshow("h01", red);
     cv::imshow("h01_gradiant", gradient);
     cv::imshow("h01_debug", debug);
+    cv::imwrite("D:/repos/ImageRegion/h01-gradient.exr", gradient);
     cv::waitKey(0);
     return 0;
 }
