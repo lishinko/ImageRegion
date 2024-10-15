@@ -118,23 +118,24 @@ GenerateResult RectGeneration::GenrateVertical(std::vector<Rect>& result, int ed
     }
     return GenerateResult(true, 0);
 }
+
 GenerateResult RectGeneration::GenerateQuadTree(std::vector<Rect>& result)
 {
     int current = 0;
-    cv::Mat newMat(_mat({0, _height / 2 + 1}, {0,_width / 2 + 1}));
-    RectGeneration g(newMat, _startx + 0, _starty + 0, _value, _minSize);
+    cv::Mat newMat(_mat({0, _height / 2 + 1}, {0,_width / 2 + 1}));//注意矩阵是row, col作为构造函数的
+    RectGeneration g(newMat, _startx + 0, _starty + 0, _value, _minSize);//但是我们的函数是x,y作为坐标开始的。
     current += g.Generate(result).rectNum;
 
     newMat = _mat({0, _height / 2 + 1}, {_width / 2 - 1, _width});
-    g = RectGeneration(newMat, _startx + _width / 2, _starty + 0, _value, _minSize);
+    g = RectGeneration(newMat, _startx + _width / 2 - 1, _starty + 0, _value, _minSize);
     current += g.Generate(result).rectNum;
 
     newMat = _mat({_height / 2 - 1, _height}, {0,_width / 2 + 1});
-    g = RectGeneration(newMat, _startx + 0, _starty + _height / 2, _value, _minSize);
+    g = RectGeneration(newMat, _startx + 0, _starty + _height / 2 - 1, _value, _minSize);
     current += g.Generate(result).rectNum;
 
     newMat = _mat({_height / 2 - 1, _height}, {_width / 2 - 1, _width});
-    g = RectGeneration(newMat, _startx + _width / 2, _starty + _height / 2, _value, _minSize);
+    g = RectGeneration(newMat, _startx + _width / 2 - 1, _starty + _height / 2 - 1, _value, _minSize);
     current += g.Generate(result).rectNum;
 
     GenerateResult ret(false, current);
