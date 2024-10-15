@@ -1,10 +1,10 @@
 ﻿#include "RectGeneration.hpp"
 
 int RectGeneration::s_retNum = 0;
-RectGeneration::RectGeneration(cv::Mat mat, int width, int height, int startx, int starty, double value, int minSize)
+RectGeneration::RectGeneration(cv::Mat mat,int startx, int starty, double value, int minSize)
     :_mat(mat)
-    , _width(width)
-    , _height(height)
+    , _width(mat.cols)
+    , _height(mat.rows)
     , _startx(startx)
     , _starty(starty)
     , _value(value)
@@ -45,6 +45,8 @@ GenerateResult RectGeneration::Generate(std::vector<Rect>& result, int start)
     r.rightTop = Point{_startx + _width - 1, _starty + _height - 1};
     result.push_back(r);
     s_retNum++;
+    ret.noSplit = true;
+    ret.rectNum = 1;
     return ret;
 }
 GenerateResult RectGeneration::GenerateAll(std::vector<Rect>& result, int start)
@@ -54,10 +56,10 @@ GenerateResult RectGeneration::GenerateAll(std::vector<Rect>& result, int start)
         for (int x = 0; x < _width - 1; x++)
         {
             Rect r;
-            r.leftBottom = Point{x, y};
-            r.leftTop = Point{x, y + 1};
-            r.rightBottom = Point{x + 1, y};
-            r.rightTop = Point{x + 1, y + 1};
+            r.leftBottom = Point{_startx + x, _starty + y};
+            r.leftTop = Point{_startx + x, _starty + y + 1};
+            r.rightBottom = Point{_startx + x + 1, _starty + y};
+            r.rightTop = Point{_startx + x + 1, _starty + y + 1};
 
             result.push_back(r);
         }
@@ -105,27 +107,27 @@ GenerateResult RectGeneration::GenrateVertical(std::vector<Rect>& result, int st
             }
         }
     }
-    return {true, 0};
+    return GenerateResult(true, 0);
 }
 GenerateResult RectGeneration::GenerateQuadTree(std::vector<Rect>& result, int start)
 {
     int current = start;
     cv::Mat newMat(_mat({0, _height / 2}, {0,_width / 2}));
-    RectGeneration g(newMat, newMat.cols, newMat.rows, 0, 0, _value, _minSize);
+    RectGeneration g(newMat,  0, 0, _value, _minSize);
     current += g.Generate(result, current).rectNum;
 
     newMat = _mat({0, _height / 2}, {_width / 2, _width});
-    g = RectGeneration(newMat, newMat.cols, newMat.rows, _width / 2, 0, _value, _minSize);
+    g = RectGeneration(newMat, _width / 2, 0, _value, _minSize);
     current += g.Generate(result, current).rectNum;
 
     newMat = _mat({_height / 2, _height}, {0,_width / 2});
-    g = RectGeneration(newMat, newMat.cols, newMat.rows, 0, _height / 2, _value, _minSize);
+    g = RectGeneration(newMat, 0, _height / 2, _value, _minSize);
     current += g.Generate(result, current).rectNum;
 
     newMat = _mat({_height / 2, _height}, {_width / 2, _width});
-    g = RectGeneration(newMat, newMat.cols, newMat.rows, _width / 2, _height / 2, _value, _minSize);
+    g = RectGeneration(newMat, _width / 2, _height / 2, _value, _minSize);
     current += g.Generate(result, current).rectNum;
 
-    GenerateResult ret = {false, current};
+    GenerateResult ret(false, current);
     return ret;
 }

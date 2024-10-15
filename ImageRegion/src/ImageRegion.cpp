@@ -23,7 +23,7 @@ int main()
 	cv::Mat gradient(red.rows, red.cols,t);
 	cv::Laplacian(red, gradient, -1);
 
-	RectGeneration g(red, red.cols, red.rows, 0, 0, 0.1, 6);
+	RectGeneration g(red, 0, 0, 0.1, 6);
 	std::vector<Rect> result(10000);
 	auto ret = g.Generate(result, 0);
 	fmt::println("-------------------------------------ret = {}, retNum = {}", ret.rectNum, RectGeneration::RetNum());

@@ -28,7 +28,7 @@ GenerateResult(bool nos, int num)
 class RectGeneration
 {
 public:
-    RectGeneration(cv::Mat mat, int width, int height,int startx, int starty, double value, int minSize);
+    RectGeneration(cv::Mat mat,int startx, int starty, double value, int minSize);
     GenerateResult Generate(std::vector<Rect>& result, int start);
     static int RetNum()
     {
